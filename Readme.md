@@ -19,7 +19,7 @@ Also we make  a .gitignore file where we put file we need to ignore like nodemod
 
 After this we make a .env file where we add sensitive files like ports, database url etc.
 
-*Step:3(a) **: Make a src folder on root
+**Step:3(a)** : Make a src folder on root
 
 Make three files 
 1. app.js 
@@ -191,3 +191,35 @@ jwt ke liye kuch keys chahiye so wo hum env file mai bana dine as:
 Yeh ek Mongoose model hai jo video collection se data access karta hai.
 
 isme we used `mongoose-aggrigatepeginate` for ...
+
+
+### Step : 7 : File handling and uploading using multer and cloudinary
+
+* [Cloudinary](https://console.cloudinary.com/pm/c-616947f1e6c0ef1a3346f68fed7b6f/getting-started) : npm i cloudinary ( Image wagera save karta hai )
+* [Multer](https://github.com/expressjs/multer) : npm i multer ( File ko upload karne mai help karta hai user se )
+
+
+`Cloudinary.js` file banegi in utils jaghga saara code hoga.
+
+
+### Step : 8 : Make a middleware using multer
+`multer.middleware.js`<br>
+As a middleware kyuki as jaarahe ho toh merse milke jaana .<br>
+jagha jagha file upload ki capability use hogi waha waha multer middleware inejct hoga like _registration_.
+
+## AFTER SETTING FILE UPLOAD, MIDDLEWARE, MODELS, UTILS, DB.<br> 
+### NOW, WE MOVE FORWARD FOR CONTROLLERS AND ROUTES.
+### Ab hoga bs logic logic logic
+
+### Step : 1 : Controller and routes
+Make a file `user.controller.js` in controller folder <br>
+Make a file `user.routes.js` in routes folder
+
+After making user route import the routes in `app.js` and declare it as a middlerware _app.use_
+
+
+**NOW CHECK THE POST METHOD IS WORKING IN POSTMAN OR NOT !** 
+
+### Step : 2 : Logic building | user register
+
+`user.controller.js`
