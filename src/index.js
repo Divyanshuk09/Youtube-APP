@@ -1,30 +1,29 @@
 // require('dotenv').config({path:'./.env'})
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 import connectDB from "./db/index.js";
 import { app } from "./app.js";
 
-dotenv.config({
-    path: "./.env",
-})
+// Load environment variables
+dotenv.config({ path: "./.env" });
 
 const port = process.env.PORT;
 
 connectDB()
-.then(()=>{
-    app.listen(port, ()=>{
-        console.log(`Server is running on port : http://localhost:${port}`)
+    .then(() => {
+        app.listen(port, () => {
+            console.log(`Server is running on port : http://localhost:${port}`);
+        });
     })
-})
-.catch((err)=>{
-    console.log("MONGODB connection error in index.js", err);
-})
+    .catch((err) => {
+        console.log("MONGODB connection error in index.js", err);
+    });
 
 
 
 
 
 
-//THIS IS AN IFFI APPROACH WHERE WE CONNECT DB AND EXPRESS BOTH 
+//THIS IS AN IFFI APPROACH WHERE WE CONNECT DB AND EXPRESS BOTH
 
 
 // import mongoose from "mongoose";
@@ -34,7 +33,7 @@ connectDB()
 // const app = express()
 // ;(async()=>{
 //     try {
-//         const connectdb = 
+//         const connectdb =
 //         await mongoose.connect(`${process.env.MONGODB_URI}/ ${DB_NAME}`)
 //         app.on("error", ()=>{
 //             console.log("Error", error)

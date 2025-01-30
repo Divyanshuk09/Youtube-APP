@@ -223,3 +223,11 @@ After making user route import the routes in `app.js` and declare it as a middle
 ### Step : 2 : Logic building | user register
 
 `user.controller.js`
+
+All the logic are in the form of steps are in the code. 
+So check code carefully.
+
+### use postman to check if the user.controller.js is working or not proparly 
+[Use this reference link from YT](https://youtu.be/_u-WgSN5ymU?si=XOFeEyW005MipNIu)
+
+### Step : 3 : Logic building | user login

@@ -51,6 +51,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     // 🔹 Step 4: Validate uploaded images (if any)
     console.log("📂 Uploaded files:", req.files); // Log uploaded files
+    
     const avatarlocalpath = req.files?.avatar?.[0]?.path;
     const coverimagelocalpath = req.files?.coverImage?.[0]?.path;
     console.log("🖼️ Avatar Path:", avatarlocalpath, "Cover Image Path:", coverimagelocalpath);
