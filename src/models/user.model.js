@@ -79,7 +79,7 @@ userSchema.methods.generateAccessToken = function () {
 };
 
 // 🔄 Generate Refresh Token and save it to DB
-userSchema.methods.refreshAccessToken = async function () {
+userSchema.methods.generateRefreshToken = async function () {
     const refreshToken = jwt.sign(
         { _id: this._id }, // Only store user ID
         process.env.REFRESH_TOKEN_SECRET,

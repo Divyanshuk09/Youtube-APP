@@ -231,3 +231,31 @@ So check code carefully.
 [Use this reference link from YT](https://youtu.be/_u-WgSN5ymU?si=XOFeEyW005MipNIu)
 
 ### Step : 3 : Logic building | user login
+
+`user.controller.js`
+
+All the logic are in the form of steps present in the code.
+So check code carefully.
+
+We also send cookies with tokens while logging
+using _res.cookie()_
+
+### Step : 4 : Logic building | user logout
+
+`user.controller.js`
+
+Make a middleware `auth.middleqware.js` <br>
+Humne ek middleware banaya hai jo JWT (access token) ko verify karta hai. Agar token valid hai, toh user ki details request mein attach karke next step ko call karta hai; agar token invalid hai, toh error throw karta hai.
+
+Uske baad `user.router.js` mai middleware verifyJWT call hoga and logoutuser . fhir logout hoga .
+
+isme cookies clear hogi _res.clearCookie()_ and logout response hoga.
+
+### Step : 4 : accesstoken and refreshtoken genration after expring
+
+toh jab refreshtoken expire hoga tab frontend mai ek refreshtoken se hum refreshtoken ko backend se match karke ek new refreshtoken dinge 
+as incoming refesh token jo user ne diya match with stored refreshtoken  `incomingrefreshToken !== user?.refreshToken` 
+match hoga toh new genereateAccessAndRefereshTokens banega.
+
+
+
