@@ -13,7 +13,7 @@ const subscriptionSchema = new Schema(
             required: true
         },
     }
-    ,{timestamps = true})
+    ,{timestamps : true})
 
 
 export const Subscription = mongoose.model("Subscription", subscriptionSchema);

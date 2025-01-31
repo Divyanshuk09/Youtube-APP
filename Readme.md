@@ -211,7 +211,7 @@ jagha jagha file upload ki capability use hogi waha waha multer middleware inejc
 ### NOW, WE MOVE FORWARD FOR CONTROLLERS AND ROUTES.
 ### Ab hoga bs logic logic logic
 
-### Step : 1 : Controller and routes
+## Step : 1 : Controller and routes
 Make a file `user.controller.js` in controller folder <br>
 Make a file `user.routes.js` in routes folder
 
@@ -220,7 +220,7 @@ After making user route import the routes in `app.js` and declare it as a middle
 
 **NOW CHECK THE POST METHOD IS WORKING IN POSTMAN OR NOT !** 
 
-### Step : 2 : Logic building | user register
+### Step : 2{a} : Logic building | user register
 
 `user.controller.js`
 
@@ -230,7 +230,7 @@ So check code carefully.
 ### use postman to check if the user.controller.js is working or not proparly 
 [Use this reference link from YT](https://youtu.be/_u-WgSN5ymU?si=XOFeEyW005MipNIu)
 
-### Step : 3 : Logic building | user login
+### Step : 2{b} : Logic building | user login
 
 `user.controller.js`
 
@@ -240,7 +240,7 @@ So check code carefully.
 We also send cookies with tokens while logging
 using _res.cookie()_
 
-### Step : 4 : Logic building | user logout
+### Step : 2{c} : Logic building | user logout
 
 `user.controller.js`
 
@@ -251,11 +251,14 @@ Uske baad `user.router.js` mai middleware verifyJWT call hoga and logoutuser . f
 
 isme cookies clear hogi _res.clearCookie()_ and logout response hoga.
 
-### Step : 4 : accesstoken and refreshtoken genration after expring
+### Step : 2{d} : accesstoken and refreshtoken genration after expring
 
 toh jab refreshtoken expire hoga tab frontend mai ek refreshtoken se hum refreshtoken ko backend se match karke ek new refreshtoken dinge 
 as incoming refesh token jo user ne diya match with stored refreshtoken  `incomingrefreshToken !== user?.refreshToken` 
 match hoga toh new genereateAccessAndRefereshTokens banega.
 
+### Step : 3 : add subscription model 
+
+Make a file `subscription.model.js` in models folder
 
 
