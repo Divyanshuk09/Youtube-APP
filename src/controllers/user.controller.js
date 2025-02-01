@@ -2,8 +2,9 @@ import { asyncHandler } from "../utils/asyncHandler.js"; // Utility to handle as
 import { ApiError } from "../utils/apiError.js"; // Custom error class for API errors
 import { ApiResponce } from "../utils/apiResponse.js"; // Custom response class for API responses
 import { User } from "../models/user.model.js"; // Import User model to interact with the database
-import { uploadOnCloudinary } from "../utils/cloudinary.js"; // Utility for uploading files to Cloudinary
+import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js"; // Utility for uploading files to Cloudinary
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 // Function to generate access and refresh tokens for a user
 const generateAccessAndRefreshTokens = async (userId) => {
@@ -284,13 +285,13 @@ const changeCurrentPasswordWithNewPassword = asyncHandler(async (req, res) => {
     console.log(`🛠 Extracted input - Current Password: ${oldPassword}, New Password: ${newPassword}`);
 
     // console.log(User.findById(req.user?._id));
-    const user = await User.findById(req.user?._id);           
+    const user = await User.findById(req.user?._id);
     console.log("📝 User:", user)
     if (!user) {
         throw new ApiError(404, "User not found");
     }
 
-    const isPasswordCorrect =  await user.isPasswordCorrect(oldPassword)
+    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
 
     if (!isPasswordCorrect) {
         throw new ApiError(400, "old password doesn't match");
@@ -299,7 +300,7 @@ const changeCurrentPasswordWithNewPassword = asyncHandler(async (req, res) => {
     user.password = newPassword;
     await user.save({ validateBeforeSave: false })
 
-    console.log("newPassword:" , newPassword);
+    console.log("newPassword:", newPassword);
     return res
         .status(200)
         .json(
@@ -333,7 +334,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     console.log("📝 Fullname:", fullname);
     console.log("📝 Email:", email);
 
-    if(!fullname || !email){
+    if (!fullname || !email) {
         throw new ApiError(400, "Please provide both fullname and email");
     }
 
@@ -343,21 +344,284 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
             $set: {
                 fullname: fullname,
                 email: email
-                }
+            }
         },
         { new: true }
     ).select("-password")
 
     return res
-    .status(200)
-    .json(
-        new ApiResponce(
-            200,
-            user,
-            "Account details updated Successfully!"
+        .status(200)
+        .json(
+            new ApiResponce(
+                200,
+                user,
+                "Account details updated Successfully!"
             )
         )
 })
+
+//this will update avatar 
+const updateUserAvatar = asyncHandler(async (req, res) => {
+    console.log("📸 Updating user avatar")
+    const avatarlocalpath = req.file?.path
+    console.log("avatarlocalpath", avatarlocalpath);
+
+    if (!avatarlocalpath) {
+        throw new ApiError(400, "Avatar file is missing");
+    }
+    // Fetch the existing user to get the current avatar URL
+    const existingUser = await User.findById(req.user?._id);
+    if (!existingUser) {
+        throw new ApiError(404, "User not found");
+    }
+
+    // Delete the existing avatar from Cloudinary if it exists
+    if (existingUser.avatar) {
+        await deleteFromCloudinary(existingUser.avatar);
+        console.log("🗑️ Old avatar deleted from Cloudinary");
+    }
+    // Upload new avatar to Cloudinary
+
+    const avatar = await uploadOnCloudinary(avatarlocalpath);
+    if (!avatar.url) {
+        throw new ApiError(400, " Error while uploading avatar");
+    }
+    console.log("📸 new Avatar uploaded to cloudinary:", avatar);
+
+    const user = User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                avatar: avatar.url
+            }
+        },
+        { new: true }
+    ).select("-password")
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponce(
+                200,
+                user,
+                "Avatar updated Successfully!"
+            )
+        )
+})
+
+//this will update coverimage 
+const updateUserCoverImage = asyncHandler(async (req, res) => {
+    console.log("📸 Updating user coverImage")
+    const CoverImagelocalpath = req.file?.path
+    console.log("CoverImagelocalpath", CoverImagelocalpath);
+
+    if (!CoverImagelocalpath) {
+        throw new ApiError(400, "coverimage file is missing");
+    }
+
+    // Fetch the existing user to get the current cover image URL
+    const existingUser = await User.findById(req.user?._id);
+    if (!existingUser) {
+        throw new ApiError(404, "User not found");
+    }
+
+    // Delete the existing cover image from Cloudinary if it exists
+    if (existingUser.coverImage) {
+        await deleteFromCloudinary(existingUser.coverImage);
+        console.log("🗑️ Old cover image deleted from Cloudinary");
+    }
+
+    // Upload new cover image to Cloudinary
+    const coverImage = await uploadOnCloudinary(CoverImagelocalpath);
+
+    if (!coverImage.url) {
+        throw new ApiError(400, " Error while uploading coverImage");
+    }
+    console.log("📸new coverImage uploaded to cloudinary:", coverImage);
+
+    const user = User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                coverImage: coverImage.url
+            }
+        },
+        { new: true }
+    ).select("-password")
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponce(
+                200,
+                user,
+                "coverImage updated Successfully!"
+            )
+        )
+})
+
+// This function retrieves the profile of a user channel, including subscriber counts and subscription status
+const getUserChannelProfile = asyncHandler(async (req, res) => {
+    console.log("📂 Fetching user channel profile. Request params:", req.params);
+
+    // Extract the username from the request parameters
+    const { username } = req.params;
+
+    // Check if the username is provided and valid
+    if (!username?.trim()) {
+        console.error("❌ Username is missing or invalid.");
+        throw new ApiError(400, "Username is missing");
+    }
+
+    console.log("🔍 Searching for channel with username:", username.toLowerCase());
+
+    // Use MongoDB aggregation to fetch the channel profile and related subscription data
+    const channel = await User.aggregate([
+        {
+            // Match the user with the provided username
+            $match: {
+                username: username?.toLowerCase()
+            }
+        },
+        {
+            // Lookup to find all subscribers of this channel
+            $lookup: {
+                from: "subscriptions",         // Collection to join 
+                localField: "_id",             // Field from the User collection
+                foreignField: "channel",       // Field from the Subscription collection 
+                as: "subscribers"              // Output array field
+            }
+        },
+        {
+            // Lookup to find all channels this user has subscribed to
+            $lookup: {
+                from: "subscriptions",         // Collection to join
+                localField: "_id",             // Field from the User collection
+                foreignField: "subscriber",    // Field from the Subscription collection
+                as: "subscribedTo"             // Output array field
+            }
+        },
+        {
+            // Add additional fields to the result(user)
+            $addFields: {
+                subscriberCount: {
+                    $size: "$subscribers"      // Count the number of subscribers
+                },
+                channelsSubscribedToCount: {
+                    $size: "$subscribedTo"     // Count the number of channels this user has subscribed to
+                },
+                isSubscribed: {
+                    // Check if the logged-in user is subscribed to this channel
+                    $cond: {
+                        if: { $in: [req.user?._id, "$subscribers.subscriber"] }, // Check if user ID exists in subscribers array
+                        then: true,
+                        else: false
+                    }
+                }
+            }
+        },
+        {
+            // Project only the required fields in the final output
+            $project: {
+                username: 1,                   // Include username
+                fullName: 1,                   // Include full name
+                subscriberCount: 1,            // Include subscriber count
+                channelsSubscribedToCount: 1,  // Include channels subscribed to count
+                isSubscribed: 1,               // Include subscription status
+                avatar: 1,                     // Include avatar
+                coverImage: 1                  // Include cover image
+            }
+        }
+    ]);
+
+    console.log("📊 Channel data structure:", channel);
+
+    // Check if the channel exists
+    if (!channel?.length) {
+        console.error("❌ Channel not found for username:", username);
+        throw new ApiError(404, "Channel does not exist.");
+    }
+
+    console.log("✅ Channel profile fetched successfully:", channel[0]);
+
+    // Return the channel profile as a JSON response
+    return res
+        .status(200)
+        .json(
+            new ApiResponce(
+                200,
+                channel[0],
+                "User channel profile fetched successfully."
+            )
+        );
+});
+
+// This function fetches the watch history of the logged-in user
+const getWatchHistory = asyncHandler(async (req, res) => {
+    console.log("📂 Fetching watch history for user:", req.user._id);
+
+    // Use MongoDB aggregation to fetch the user's watch history
+    const user = await User.aggregate([
+        {
+            // Match the logged-in user by their ID
+            $match: {
+                _id: new mongoose.Types.ObjectId(req.user._id)
+            }
+        },
+        {
+            // Lookup to fetch the videos in the user's watch history
+            $lookup: {
+                from: 'videos',                // Collection to join (videos)
+                localField: 'watchHistory',    // Field from the User collection
+                foreignField: '_id',           // Field from the Video collection
+                as: 'watchHistory',            // Output array field
+                pipeline: [
+                    {
+                        // Lookup to fetch the owner details of each video
+                        $lookup: {
+                            from: 'users',     // Collection to join (users)
+                            localField: 'owner', // Field from the Video collection
+                            foreignField: '_id', // Field from the User collection
+                            as: 'owner',       // Output array field
+                            pipeline: [
+                                {
+                                    // Project only the required owner fields
+                                    $project: {
+                                        fullName: 1,       // Include full name
+                                        username: 1,       // Include username
+                                        profilePicture: 1, // Include profile picture
+                                        avatar: 1          // Include avatar
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        // Replace the owner array with the first element (since it's a one-to-one relationship)
+                        $addFields: {
+                            owner: {
+                                $first: "$owner"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    ]);
+
+    console.log("📊 Watch history data structure:", user[0]?.watchHistory);
+
+    // Return the watch history as a JSON response
+    return res
+        .status(200)
+        .json(
+            new ApiResponce(
+                200,
+                user[0].watchHistory,
+                "User's watch history fetched successfully."
+            )
+        );
+});
 
 export {
     registerUser,
@@ -366,5 +630,9 @@ export {
     refreshAccessToken,
     changeCurrentPasswordWithNewPassword,
     getcurrentUser,
-    updateAccountDetails
+    updateAccountDetails,
+    updateUserAvatar,
+    updateUserCoverImage,
+    getUserChannelProfile,
+    getWatchHistory
 };

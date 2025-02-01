@@ -255,10 +255,48 @@ isme cookies clear hogi _res.clearCookie()_ and logout response hoga.
 
 toh jab refreshtoken expire hoga tab frontend mai ek refreshtoken se hum refreshtoken ko backend se match karke ek new refreshtoken dinge 
 as incoming refesh token jo user ne diya match with stored refreshtoken  `incomingrefreshToken !== user?.refreshToken` 
-match hoga toh new genereateAccessAndRefereshTokens banega.
+match hoga toh new genereateAccessAndRefereshTokens banega.<br>
+Function is `refreshAccessToken` in code
+
+after that add some more function in user and pass them into routes:
+- `changeCurrentPasswordWithNewPassword`: to chanage the old password into new
+- `getcurrentUser` : to get user profile
+- `updateAccountDetails`: to update user details like (fullname, email)
+- `updateAvatar` : remove the existing avtar and  upload the new avatar on cloudinary.
+- `updateCoverPhoto` : remove the existing cover photo and upload the new cover photo on cloud.
+
 
 ### Step : 3 : add subscription model 
 
-Make a file `subscription.model.js` in models folder
+Make a file `subscription.model.js` in models folder.
+
+Diagram representation to understand the subscription schema is:
+```
++-------------------+          +-------------------+          +-------------------+
+|    Subscriber     |          |    Subscription   |          |      Channel      |
+|-------------------|          |-------------------|          |-------------------|
+| a                 |<-------->| Subscriber: a     |          | CAC               |
+| b                 |          | Channel: CAC      |<-------->| HCC               |
+| c                 |<-------->| Subscriber: c     |          | FCC               |
+| d                 |          | Channel: HCC      |<-------->|                   |
+| e                 |<-------->| Subscriber: c     |          |                   |
++-------------------+          | Channel: FCC      |          +-------------------+
+                               +-------------------+
+
+```
+So, subscriber "A" can subscribe more then one channel so , to see how many channel that subscriber subscribed can be get so we need to count the channel beacuse subscriber is also an channel.
+
+[Channel se subscriber milte hai aur subscriber se channel] (https://www.youtube.com/watch?v=4_Ge2QEcT8k&list=PLu71SKxNbfoBGh_8p_NS-ZAh6v7HhYqHW&index=19&ab_channel=ChaiaurCode)<br>
+Timestamp to understand the concept : 9:00
+
+### Step : 4 : Mongodb Aggregation Pipeline [Docs](https://www.mongodb.com/docs/manual/core/aggregation-pipeline/)
+
+Make a function [getUserChannelProfile](https://youtu.be/fDTf1mk-jQg?si=fbpLbRCRpQSlTNb4) in `user.controller.js`<br>
+
+Ye code ek user ka channel profile fetch karta hai, jisme uska subscriber count, channels subscribed to count, aur subscription status (logged-in user ne subscribe kiya hai ya nahi) show hota hai. Aggregation pipeline use karke, ye data efficiently fetch karta hai aur response mein return karta hai.
+
+Make a function  `getWatchHistory` in `user.controller.js`
+
+Ye code user ka watch history fetch karta hai, jisme videos ke saath unke owner ka details (jaise fullName, username, avatar) bhi include hota hai. Aggregation pipeline use karke, ye videos aur unke owners ka data efficiently fetch karta hai aur response mein return karta hai. Yeah we used nested pipeline here which was kinda tricky.
 
 
