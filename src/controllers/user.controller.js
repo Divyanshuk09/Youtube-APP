@@ -559,7 +559,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
 // This function fetches the watch history of the logged-in user
 const getWatchHistory = asyncHandler(async (req, res) => {
     console.log("📂 Fetching watch history for user:", req.user._id);
-
+ 
     // Use MongoDB aggregation to fetch the user's watch history
     const user = await User.aggregate([
         {

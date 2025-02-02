@@ -299,4 +299,6 @@ Make a function  `getWatchHistory` in `user.controller.js`
 
 Ye code user ka watch history fetch karta hai, jisme videos ke saath unke owner ka details (jaise fullName, username, avatar) bhi include hota hai. Aggregation pipeline use karke, ye videos aur unke owners ka data efficiently fetch karta hai aur response mein return karta hai. Yeah we used nested pipeline here which was kinda tricky.
 
+After that pass all the functions into there routes `user.router.js`
 
+There we completed the user section where we can register, login, logout , change tokens, change passsword,  
