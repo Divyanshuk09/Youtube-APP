@@ -16,18 +16,22 @@ app.use(express.json({ limit: "16kb" })); // Limit request body size to prevent 
 // ✅ Middleware to parse URL-encoded data (for form submissions)  
 app.use(express.urlencoded({ extended: true, limit: "16kb" })); // Extended allows nested objects  
 
-// ✅ Serve static files from the "public" folder  
-app.use(express.static("public"));
-
 // ✅ Parse cookies from incoming requests  
 app.use(cookieParser());
 
+// ✅ Serve static files from the "public" folder  
+app.use(express.static("public"));
+
 // ✅ Import userRouter  
 import userRouter from "./routes/user.routes.js"; 
+import videoRouter from "./routes/video.routes.js"
 
 // ✅ Register user-related routes under "/api/v1/users"  
 app.use("/api/v1/users", userRouter);
+// app.use("/api/v1", videoRouter);
+app.use('/api/v1/videos', videoRouter);
 
-// Example endpoint: "http://localhost:8000/api/v1/users/register"
+
+// Example endpoint: "http://localhost:8000/api/v1/videos/"
 
 export { app }; // ✅ Export app for use in the main server file  

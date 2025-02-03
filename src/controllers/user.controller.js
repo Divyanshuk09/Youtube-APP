@@ -102,7 +102,14 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     // 🔹 Step 9: Send the response
-    return res.status(201).json(new ApiResponce(200, createduser, "User registered successfully")); // Send a successful response with the created user data
+    return res
+        .status(201)
+        .json(
+            new ApiResponce(
+                200,
+                createduser,
+                "User registered successfully"
+            )); // Send a successful response with the created user data
 });
 
 // Login user function
@@ -559,7 +566,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
 // This function fetches the watch history of the logged-in user
 const getWatchHistory = asyncHandler(async (req, res) => {
     console.log("📂 Fetching watch history for user:", req.user._id);
- 
+
     // Use MongoDB aggregation to fetch the user's watch history
     const user = await User.aggregate([
         {

@@ -301,4 +301,6 @@ Ye code user ka watch history fetch karta hai, jisme videos ke saath unke owner 
 
 After that pass all the functions into there routes `user.router.js`
 
-There we completed the user section where we can register, login, logout , change tokens, change passsword,  
+```
+There we completed the user section where we can register, login, logout , change tokens, change passsword,
+```
