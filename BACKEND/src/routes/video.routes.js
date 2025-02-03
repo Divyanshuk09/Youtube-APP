@@ -12,6 +12,10 @@ import {
 } from "../controllers/video.controller.js";
 
 const router = Router();
+router.route("/").get((req, res) => {
+    res.send("video API is working!");
+});
+
 router.use(verifyJWT); //apply verifyjwt middleware to all routes in this field
 
 router.route("/").get(getAllVideosForHome);

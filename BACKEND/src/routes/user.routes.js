@@ -18,6 +18,11 @@ import { verifyJWT } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
+// ✅ Add a GET route for "/api/v1/users/"
+router.route("/").get((req, res) => {
+    res.send("User API is working!");
+});
+
 router.route("/register").post(
     upload.fields([
         {
@@ -50,6 +55,5 @@ router.route("/update-coverimage").patch(verifyJWT, upload.single("coverImage"),
 router.route("/c/:username").get(verifyJWT, getUserChannelProfile);
 
 router.route("/watch-history").get(verifyJWT, getWatchHistory);
-
 
 export default router;
