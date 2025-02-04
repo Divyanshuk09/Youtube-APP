@@ -17,7 +17,7 @@ const playlistSchema = new Schema(
             }
         ]
         ,
-        owenr: {
+        owner: {
             type: Schema.Types.ObjectId,
             ref: "User"
         }
@@ -25,4 +25,4 @@ const playlistSchema = new Schema(
     { timestamps: true }
 )
 
-export const Playlist = mongoose.model("Playlist", playlistSchema)
+export const Playlist = mongoose.model("Playlist", playlistSchema);

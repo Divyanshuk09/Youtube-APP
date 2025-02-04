@@ -29,11 +29,11 @@ router.post(
     publishVideo
 );
 
-router.route("/:id").delete(deleteVideo);
+router.route("/:videoId")
+.delete(deleteVideo)
+.put(upload.single('thumbnail'), updateVideo)
+.patch(togglePublishStatus);
 router.route("/results").get(searchVideo);
-router.put("/:videoId", upload.single('thumbnail'), updateVideo);
-
-router.route("/:videoId").patch(togglePublishStatus);
 
 
 

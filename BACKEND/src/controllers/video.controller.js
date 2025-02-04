@@ -180,8 +180,8 @@ const getAllVideosForHome = asyncHandler(async (req, res, next) => {
 
 const deleteVideo = asyncHandler(async (req, res, next) => {
 
-    console.log("req.params.id:", req.params.id);
-    const videoId = req.params.id;
+    console.log("req.params.id:", req.params);
+    const {videoId} = req.params;
     const userId = req.user._id;
 
     console.log(`Attempting to delete video :${videoId} by user: ${userId}`);
