@@ -16,10 +16,12 @@ router.route("/").get((req, res) => {
     res.send("video API is working!");
 });
 
-router.use(verifyJWT); //apply verifyjwt middleware to all routes in this field
 
-router.route("/").get(getAllVideosForHome);
+router.route("/homepage").get(getAllVideosForHome);
+router.route("/results").get(searchVideo);
 
+//apply verifyjwt middleware to all routes in this field
+router.use(verifyJWT); 
 router.post(
     "/",
     upload.fields([
@@ -33,7 +35,6 @@ router.route("/:videoId")
 .delete(deleteVideo)
 .put(upload.single('thumbnail'), updateVideo)
 .patch(togglePublishStatus);
-router.route("/results").get(searchVideo);
 
 
 
