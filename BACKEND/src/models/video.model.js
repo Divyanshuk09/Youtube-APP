@@ -19,7 +19,7 @@ const videoSchema = new Schema(
             type: String,
             required: true,
         },
-        duration : {
+        duration: {
             type: Number, // cloudnary url
             required: true,
         },
@@ -31,10 +31,22 @@ const videoSchema = new Schema(
             type: Boolean,
             default: true,
         },
-        owner:{
-            type : Schema.Types.ObjectId,
-            ref  :"User"
+        owner: {
+            type: Schema.Types.ObjectId,
+            ref: "User"
         },
+        likes: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User"
+            }
+        ],
+        dislikes: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User"
+            }
+        ],
         comments: [
             { type: Schema.Types.ObjectId, ref: "Comment" }
         ]

@@ -41,19 +41,16 @@ const registerUser = asyncHandler(async (req, res) => {
     9️⃣ Send a response with user details.
     */
 
-    // 🔹 Step 1: Extract user details from request
-    const { username, email, fullname, password } = req.body; // Destructure user details from the request body
-    console.log("✏️ Extracted fields - Username:", username, "Email:", email, "Fullname:", fullname); // Log the extracted details
+    const { username, email, channelName, password } = req.body; // Destructure user details from the request body
+    console.log("✏️ Extracted fields - Username:", username, "Email:", email, "channelName:", channelName); // Log the extracted details
 
-    // 🔹 Step 2: Validate required fields
-    if ([fullname, email, username, password].some((field) => field?.trim() === "")) { // Check if any field is missing or empty
+    if ([channelName, email, username, password].some((field) => field?.trim() === "")) { // Check if any field is missing or empty
         console.log("❌ Validation failed: Missing required fields");
         throw new ApiError(400, "All fields are required");
     }
 
-    // 🔹 Step 3: Check if user already exists (by email or username)
     console.log(`🔍 Checking if user exists with email: ${email} or username: ${username}`); // Log the search operation
-    // Check if a user with the same email or username exists in the database
+
     const existedUser = await User.findOne(
         {
             $or: [{ username }, { email }]
@@ -64,7 +61,6 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(409, "User with this email or username already exists");
     }
 
-    // 🔹 Step 4: Validate uploaded images (if any)
     console.log("📂 Uploaded files:", req.files); // Log uploaded files to the console for debugging
 
     const avatarlocalpath = req.files?.avatar?.[0]?.path; // Get the local path of the avatar image from the request
@@ -75,7 +71,6 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Avatar file is required");
     }
 
-    // 🔹 Step 5: Upload images to Cloudinary
     const avatar = await uploadOnCloudinary(avatarlocalpath); // Upload the avatar image to Cloudinary and get the URL
     const coverImage = coverimagelocalpath ? await uploadOnCloudinary(coverimagelocalpath) : null; // Upload cover image if it exists
 
@@ -83,9 +78,8 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Failed to upload avatar");
     }
 
-    // 🔹 Step 6: Create a new user entry in the database
     const user = await User.create({
-        fullname,
+        channelName,
         avatar: avatar.url, // Store avatar URL in the user record
         coverImage: coverImage?.url || "", // Store cover image URL if it exists, otherwise store an empty string
         email,
@@ -93,15 +87,12 @@ const registerUser = asyncHandler(async (req, res) => {
         username: username.toLowerCase() // Ensure the username is stored in lowercase
     });
 
-    // 🔹 Step 7: Remove sensitive information before sending response
     const createduser = await User.findById(user._id).select("-password -refreshToken"); // Select the user record without password and refreshToken fields
 
-    // 🔹 Step 8: Ensure user creation was successful
     if (!createduser) { // If the user wasn't created successfully
         throw new ApiError(500, "Something went wrong while registering the user"); // Throw an error indicating the user registration failed
     }
 
-    // 🔹 Step 9: Send the response
     return res
         .status(201)
         .json(
@@ -337,19 +328,19 @@ const getcurrentUser = asyncHandler(async (req, res) => {
 const updateAccountDetails = asyncHandler(async (req, res) => {
     console.log("📝 Updating account details")
 
-    const { fullname, email } = req.body;
-    console.log("📝 Fullname:", fullname);
+    const { channelName, email } = req.body;
+    console.log("📝 channelName:", channelName);
     console.log("📝 Email:", email);
 
-    if (!fullname || !email) {
-        throw new ApiError(400, "Please provide both fullname and email");
+    if (!channelName || !email) {
+        throw new ApiError(400, "Please provide both channelName and email");
     }
 
     const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
             $set: {
-                fullname: fullname,
+                channelName: channelName,
                 email: email
             }
         },
@@ -531,7 +522,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
             // Project only the required fields in the final output
             $project: {
                 username: 1,                   // Include username
-                fullName: 1,                   // Include full name
+                channelName: 1,                   // Include full name
                 subscriberCount: 1,            // Include subscriber count
                 channelsSubscribedToCount: 1,  // Include channels subscribed to count
                 isSubscribed: 1,               // Include subscription status
@@ -594,7 +585,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
                                 {
                                     // Project only the required owner fields
                                     $project: {
-                                        fullName: 1,       // Include full name
+                                        channelName: 1,       // Include full name
                                         username: 1,       // Include username
                                         profilePicture: 1, // Include profile picture
                                         avatar: 1          // Include avatar

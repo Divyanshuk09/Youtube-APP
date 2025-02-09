@@ -4,6 +4,12 @@ import bcrypt from "bcrypt";
 
 const userSchema = new Schema(
     {
+        channelName: {
+            type: String,
+            required: [true, "Full name is required"], 
+            trim: true,
+            index: true,
+        },
         username: {
             type: String,
             required: [true, "Username is required"], 
@@ -18,12 +24,6 @@ const userSchema = new Schema(
             unique: true,
             lowercase: true,
             trim: true,
-        },
-        fullname: {
-            type: String,
-            required: [true, "Full name is required"], 
-            trim: true,
-            index: true,
         },
         password: {
             type: String,
@@ -42,6 +42,10 @@ const userSchema = new Schema(
                 ref: "Video",
             },
         ],
+        subscriptions:[{
+            type: Schema.Types.ObjectId,
+            ref:"User"
+        }],
         refreshToken: {
             type: String,
         },
