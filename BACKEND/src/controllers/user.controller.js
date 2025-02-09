@@ -1,6 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js"; // Utility to handle async functions and errors
-import { ApiError } from "../utils/apiError.js"; // Custom error class for API errors
-import { ApiResponce } from "../utils/apiResponse.js"; // Custom response class for API responses
+import { ApiError } from "../utils/ApiError.js"; // Custom error class for API errors
+import { ApiResponce } from "../utils/ApiResponse.js"; // Custom response class for API responses
 import { User } from "../models/user.model.js"; // Import User model to interact with the database
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js"; // Utility for uploading files to Cloudinary
 import jwt from "jsonwebtoken";
@@ -25,7 +25,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
 }
 
 // Register a new user function
-const registerUser = asyncHandler(async (req, res) => {
+export const registerUser = asyncHandler(async (req, res) => {
     console.log("📥 Incoming request body of registerUser:", req.body); // Log the incoming request data
 
     /*
@@ -104,7 +104,7 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 // Login user function
-const loginUser = asyncHandler(async (req, res) => {
+export const loginUser = asyncHandler(async (req, res) => {
     console.log("📥 Incoming request body of loginUser:", req.body);
 
     /*
@@ -175,7 +175,7 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 // Logout user function
-const logOutUser = asyncHandler(async (req, res) => {
+export const logOutUser = asyncHandler(async (req, res) => {
     console.log(`🔄 Logging out user with ID: ${req.user._id}`);
 
     // Remove the refreshToken from the user's record
@@ -211,7 +211,7 @@ const logOutUser = asyncHandler(async (req, res) => {
 });
 
 // refreshAccessaToken function
-const refreshAccessToken = asyncHandler(async (req, res) => {
+export const refreshAccessToken = asyncHandler(async (req, res) => {
     try {
         console.log("🔄 Refreshing access token...");
 
@@ -276,7 +276,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 //changecurrentpasswordwithnewpassword
-const changeCurrentPasswordWithNewPassword = asyncHandler(async (req, res) => {
+export const changeCurrentPasswordWithNewPassword = asyncHandler(async (req, res) => {
     console.log("🔒 Changing current password with new password");
     // console.log("response body",req.body)
     const { oldPassword, newPassword } = req.body;
@@ -311,7 +311,7 @@ const changeCurrentPasswordWithNewPassword = asyncHandler(async (req, res) => {
 })
 
 //getting currentuser
-const getcurrentUser = asyncHandler(async (req, res) => {
+export const getcurrentUser = asyncHandler(async (req, res) => {
     console.log("👀 Getting current user")
     return res
         .status(200)
@@ -325,7 +325,7 @@ const getcurrentUser = asyncHandler(async (req, res) => {
 })
 
 //this will update account details 
-const updateAccountDetails = asyncHandler(async (req, res) => {
+export const updateAccountDetails = asyncHandler(async (req, res) => {
     console.log("📝 Updating account details")
 
     const { channelName, email } = req.body;
@@ -359,7 +359,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 })
 
 //this will update avatar 
-const updateUserAvatar = asyncHandler(async (req, res) => {
+export const updateUserAvatar = asyncHandler(async (req, res) => {
     console.log("📸 Updating user avatar")
     const avatarlocalpath = req.file?.path
     console.log("avatarlocalpath", avatarlocalpath);
@@ -408,7 +408,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 })
 
 //this will update coverimage 
-const updateUserCoverImage = asyncHandler(async (req, res) => {
+export const updateUserCoverImage = asyncHandler(async (req, res) => {
     console.log("📸 Updating user coverImage")
     const CoverImagelocalpath = req.file?.path
     console.log("CoverImagelocalpath", CoverImagelocalpath);
@@ -459,7 +459,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 })
 
 // This function retrieves the profile of a user channel, including subscriber counts and subscription status
-const getUserChannelProfile = asyncHandler(async (req, res) => {
+export const getUserChannelProfile = asyncHandler(async (req, res) => {
     console.log("📂 Fetching user channel profile. Request params:", req.params);
 
     // Extract the username from the request parameters
@@ -555,7 +555,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
 });
 
 // This function fetches the watch history of the logged-in user
-const getWatchHistory = asyncHandler(async (req, res) => {
+export const getWatchHistory = asyncHandler(async (req, res) => {
     console.log("📂 Fetching watch history for user:", req.user._id);
 
     // Use MongoDB aggregation to fetch the user's watch history
@@ -621,16 +621,3 @@ const getWatchHistory = asyncHandler(async (req, res) => {
         );
 });
 
-export {
-    registerUser,
-    loginUser,
-    logOutUser,
-    refreshAccessToken,
-    changeCurrentPasswordWithNewPassword,
-    getcurrentUser,
-    updateAccountDetails,
-    updateUserAvatar,
-    updateUserCoverImage,
-    getUserChannelProfile,
-    getWatchHistory
-};

@@ -9,7 +9,7 @@ import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js
 
 
 // publishVideo (For uploading a new video)
-const publishVideo = asyncHandler(async (req, res, next) => {
+export const publishVideo = asyncHandler(async (req, res, next) => {
     const owner = req.user._id; // Get the authenticated user's ID from the JWT
     console.log(`Authenticated user ID: ${owner}`);
 
@@ -110,7 +110,7 @@ const publishVideo = asyncHandler(async (req, res, next) => {
 });
 
 // getallvideosfor homepage
-const getAllVideosForHome = asyncHandler(async (req, res, next) => {
+export const getAllVideosForHome = asyncHandler(async (req, res, next) => {
     console.log("Getting random videos for homepage.....");
 
     // Extract page and limit for pagination from query params (if provided)
@@ -178,7 +178,7 @@ const getAllVideosForHome = asyncHandler(async (req, res, next) => {
 });
 
 
-const deleteVideo = asyncHandler(async (req, res, next) => {
+export const deleteVideo = asyncHandler(async (req, res, next) => {
 
     console.log("req.params.id:", req.params);
     const {videoId} = req.params;
@@ -234,7 +234,7 @@ const deleteVideo = asyncHandler(async (req, res, next) => {
 
 })
 
-const searchVideo = asyncHandler(async (req, res, next) => {
+export const searchVideo = asyncHandler(async (req, res, next) => {
     const query = req.query.search_query;
 
     if (!query) {
@@ -301,7 +301,7 @@ const searchVideo = asyncHandler(async (req, res, next) => {
 
 })
 
-const updateVideo = asyncHandler(async(req, res, next) => {
+export const updateVideo = asyncHandler(async(req, res, next) => {
     // Get the video ID and other data from the request
     const { videoId } = req.params;
     const { title, description } = req.body;
@@ -361,7 +361,7 @@ const updateVideo = asyncHandler(async(req, res, next) => {
     );
 });
 
-const togglePublishStatus = asyncHandler(async (req, res) => {
+export const togglePublishStatus = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     const video = await Video.findById(videoId);
 
@@ -398,4 +398,4 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
     )
 })
 
-export { getAllVideosForHome, publishVideo, deleteVideo, searchVideo, updateVideo, togglePublishStatus };
+
