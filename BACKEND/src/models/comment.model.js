@@ -11,13 +11,9 @@ const commentSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: "User"
         },
-        content: {
+        comment: {
             type: String,
             required: true
-        },
-        parentComment: {
-            type: Schema.Types.ObjectId,
-            ref: 'Comment',
         },
         likes: [
             {
