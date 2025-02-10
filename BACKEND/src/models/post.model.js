@@ -1,18 +1,33 @@
-import mongoose, {Schema} from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const postSchema = new Schema({
+    title: {
+        type: String,
+        required: true
+    },
     content: {
         type: String,
         required: true
     },
-    image:{
-        type:String, //url from cloudinary
+    image: {
+        type: String, //url from cloudinary
     },
-    owner: {
+    author: {
         type: Schema.Types.ObjectId,
         ref: "User"
-    }
-}, {timestamps: true})
+    },
+    likes: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        }
+    ],
+    dislikes: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        }],
+}, { timestamps: true })
 
 
 export const Post = mongoose.model("Post", postSchema)
