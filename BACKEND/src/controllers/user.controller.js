@@ -1,5 +1,5 @@
 import { asyncHandler } from "../utils/asyncHandler.js"; // Utility to handle async functions and errors
-import { ApiError } from "../utils/ApiError.js"; // Custom error class for API errors
+import { ApiError } from "../utils/apiError.js"; // Custom error class for API errors
 import { ApiResponce } from "../utils/ApiResponse.js"; // Custom response class for API responses
 import { User } from "../models/user.model.js"; // Import User model to interact with the database
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js"; // Utility for uploading files to Cloudinary

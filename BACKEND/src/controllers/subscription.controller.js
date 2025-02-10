@@ -22,7 +22,7 @@ const subscribe = asyncHandler(async (req, res) => {
 
     // ✅ Create new subscription
     await Subscription.create({ subscriber: userId, channel: channelId });
-
+    
     res.status(200).json(new ApiResponce(200, "Subscription created successfully"));
 });
 
