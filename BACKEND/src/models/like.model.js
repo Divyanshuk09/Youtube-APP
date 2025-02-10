@@ -1,6 +1,5 @@
 import mongoose, {Schema} from "mongoose";
 
-
 const likeSchema = new Schema({
     video: {
         type: Schema.Types.ObjectId,
@@ -12,7 +11,7 @@ const likeSchema = new Schema({
     },
     post: {
         type: Schema.Types.ObjectId,
-        ref: "Tweet"
+        ref: "Post"
     },
     likedBy: {
         type: Schema.Types.ObjectId,
