@@ -1,7 +1,7 @@
 import { Post } from "../models/post.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiError.js";
-import { ApiResponce } from "../utils/apiResponse.js";
+import { ApiResponse } from "../utils/apiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const addPost = asyncHandler(async (req, res) => {
@@ -31,7 +31,7 @@ const addPost = asyncHandler(async (req, res) => {
     console.log("New Post:", newPost);
     await newPost.save();
     return res.status(201).json(
-        new ApiResponce(201, newPost, "Post sent successfully!")
+        new ApiResponse(201, newPost, "Post sent successfully!")
     );
 });
 
@@ -44,7 +44,7 @@ const getUserPosts = asyncHandler(async (req, res) => {
         .sort({ createdAt: -1 });
 
     return res.status(200).json(
-        new ApiResponce(200, posts, "User's posts retrieved successfully")
+        new ApiResponse(200, posts, "User's posts retrieved successfully")
     );
 });
 
@@ -77,7 +77,7 @@ const updatePost = asyncHandler(async (req, res) => {
 
     console.log("Final post before save:", post);
     await post.save();
-    return res.status(200).json(new ApiResponce(200, post, "Post updated successfully!"));
+    return res.status(200).json(new ApiResponse(200, post, "Post updated successfully!"));
 });
 
 
@@ -92,7 +92,7 @@ const deletePost = asyncHandler(async (req, res) => {
         throw new ApiError(403, "You are not authorized to delete this post");
     }
     await post.deleteOne();
-    return res.status(200).json(new ApiResponce(200, post, "Post deleted successfully!"));
+    return res.status(200).json(new ApiResponse(200, post, "Post deleted successfully!"));
 })
 
 export {

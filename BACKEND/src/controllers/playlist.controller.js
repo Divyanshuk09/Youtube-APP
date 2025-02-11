@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { Playlist } from "../models/playlist.model.js";
 import { Video } from "../models/video.model.js";
 import { ApiError } from "../utils/apiError.js";
-import { ApiResponce } from "../utils/apiResponse.js";
+import { ApiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const createPlaylist = asyncHandler(async (req, res) => {
@@ -25,7 +25,7 @@ const createPlaylist = asyncHandler(async (req, res) => {
 
     res
         .status(201)
-        .json(new ApiResponce(
+        .json(new ApiResponse(
             201,
             newPlaylist,
             "Playlist created successfully"
@@ -54,7 +54,7 @@ const getUserPlaylist = asyncHandler(async (req, res) => {
 
     // Return response with user's playlists
     return res.status(200).json(
-        new ApiResponce(200, userPlaylists, "User playlists retrieved successfully")
+        new ApiResponse(200, userPlaylists, "User playlists retrieved successfully")
     );
 });
 
@@ -103,7 +103,7 @@ const searchPlaylist = asyncHandler(async (req, res) => {
     }
 
     return res.status(200).json(
-        new ApiResponce(
+        new ApiResponse(
             200,
             playlists,
             "playlist fetched successfully"
@@ -126,7 +126,7 @@ const getPlaylistVideos = asyncHandler(async (req, res) => {
 
     // Send the playlist with all videos
     return res.status(200).json(
-        new ApiResponce(200, playlist.videos, "Videos retrieved successfully")
+        new ApiResponse(200, playlist.videos, "Videos retrieved successfully")
     );
 });
 
@@ -168,7 +168,7 @@ Save the updated playlist and return the result.
     await playlist.save();
 
     return res.status(200).json(
-        new ApiResponce(
+        new ApiResponse(
             200,
             playlist,
             "Video added to playlist successfully"
@@ -208,7 +208,7 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
     console.log("Video removed successfully from playlist");
 
     return res.status(200).json(
-        new ApiResponce(200, playlist, "Video removed from playlist successfully")
+        new ApiResponse(200, playlist, "Video removed from playlist successfully")
     );
 });
 
@@ -234,7 +234,7 @@ const deletePlaylist = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponce(
+            new ApiResponse(
                 200,
                 null,
                 "Playlist deleted successfully"
@@ -275,7 +275,7 @@ const updatePlaylist = asyncHandler(async (req, res) => {
     await playlist.save();
     console.log("Playlist updated successfully");
 
-    return res.status(200).json(new ApiResponce(200, null, "Playlist updated successfully"));
+    return res.status(200).json(new ApiResponse(200, null, "Playlist updated successfully"));
 });
 
 

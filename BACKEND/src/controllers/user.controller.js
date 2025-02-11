@@ -1,6 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js"; // Utility to handle async functions and errors
 import { ApiError } from "../utils/apiError.js"; // Custom error class for API errors
-import { ApiResponce } from "../utils/ApiResponse.js"; // Custom response class for API responses
+import { ApiResponse } from "../utils/ApiResponse.js"; // Custom response class for API responses
 import { User } from "../models/user.model.js"; // Import User model to interact with the database
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js"; // Utility for uploading files to Cloudinary
 import jwt from "jsonwebtoken";
@@ -96,7 +96,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     return res
         .status(201)
         .json(
-            new ApiResponce(
+            new ApiResponse(
                 200,
                 createduser,
                 "User registered successfully"
@@ -164,7 +164,7 @@ export const loginUser = asyncHandler(async (req, res) => {
         .cookie("accessToken", accessToken, options) // Set the access token cookie
         .cookie("refreshToken", refreshToken, options) // Set the refresh token cookie
         .json(
-            new ApiResponce(
+            new ApiResponse(
                 200,
                 {
                     user: loggedinUser, accessToken, refreshToken // Send the user data along with tokens
@@ -202,7 +202,7 @@ export const logOutUser = asyncHandler(async (req, res) => {
         .clearCookie("accessToken", options)
         .clearCookie("refreshToken", options)
         .json(
-            new ApiResponce(
+            new ApiResponse(
                 200,
                 {},
                 "User Logged Out"
@@ -262,7 +262,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
             .cookie("accessToken", accessToken, options)
             .cookie("refreshToken", newRefreshToken, options)
             .json(
-                new ApiResponce(
+                new ApiResponse(
                     200,
                     { accessToken, refreshToken: newRefreshToken },
                     "Access Token Refreshed Successfully"
@@ -302,7 +302,7 @@ export const changeCurrentPasswordWithNewPassword = asyncHandler(async (req, res
     return res
         .status(200)
         .json(
-            new ApiResponce(
+            new ApiResponse(
                 200,
                 { message: "Password changed successfully" },
                 "Password changed successfully"
@@ -316,7 +316,7 @@ export const getcurrentUser = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponce(
+            new ApiResponse(
                 200,
                 req.user,
                 "Current User fetched successfully."
@@ -350,7 +350,7 @@ export const updateAccountDetails = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponce(
+            new ApiResponse(
                 200,
                 user,
                 "Account details updated Successfully!"
@@ -399,7 +399,7 @@ export const updateUserAvatar = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponce(
+            new ApiResponse(
                 200,
                 user,
                 "Avatar updated Successfully!"
@@ -450,7 +450,7 @@ export const updateUserCoverImage = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponce(
+            new ApiResponse(
                 200,
                 user,
                 "coverImage updated Successfully!"
@@ -546,7 +546,7 @@ export const getUserChannelProfile = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponce(
+            new ApiResponse(
                 200,
                 channel[0],
                 "User channel profile fetched successfully."
@@ -613,7 +613,7 @@ export const getWatchHistory = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(
-            new ApiResponce(
+            new ApiResponse(
                 200,
                 user[0].watchHistory,
                 "User's watch history fetched successfully."

@@ -1,5 +1,5 @@
 // Custom API Response class for sending standardized API responses
-class ApiResponce {
+class ApiResponse {
     constructor(
         statusCode, // HTTP status code (e.g., 200 for success, 400 for bad request)
         data, // The response payload containing the requested data
@@ -12,4 +12,4 @@ class ApiResponce {
     }
 }
 
-export { ApiResponce }; // Export the class for use in other parts of the application
+export { ApiResponse }; // Export the class for use in other parts of the application

@@ -3,7 +3,7 @@ import { Video } from "../models/video.model.js";
 import { User } from "../models/user.model.js";
 import { v2 as cloudinary } from 'cloudinary';
 import { ApiError } from "../utils/ApiError.js";
-import { ApiResponce } from "../utils/ApiResponse.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
 
@@ -105,7 +105,7 @@ export const publishVideo = asyncHandler(async (req, res, next) => {
     console.log("New video saved to database.");
 
     return res.status(200).json(
-        new ApiResponce(200, newVideo, "Video uploaded successfully")
+        new ApiResponse(200, newVideo, "Video uploaded successfully")
     );
 });
 
@@ -169,7 +169,7 @@ export const getAllVideosForHome = asyncHandler(async (req, res, next) => {
         console.log(`Fetched ${videos.length} videos for homepage.`);
 
         return res.status(200).json(
-            new ApiResponce(200, videos, "Videos fetched successfully")
+            new ApiResponse(200, videos, "Videos fetched successfully")
         );
     } catch (error) {
         console.error("Error fetching videos for homepage:", error.message);
@@ -225,7 +225,7 @@ export const deleteVideo = asyncHandler(async (req, res, next) => {
     return res
         .status(200)
         .json(
-            new ApiResponce(
+            new ApiResponse(
                 200,
                 null,
                 "Video deleted successfully"
@@ -284,7 +284,7 @@ export const searchVideo = asyncHandler(async (req, res, next) => {
         return res
             .status(200)
             .json(
-                new ApiResponce(
+                new ApiResponse(
                     200,
                     videos,
                     "Videos fetched successfully",
@@ -357,7 +357,7 @@ export const updateVideo = asyncHandler(async(req, res, next) => {
     console.log("Video updated successfully:", updatedVideo);
 
     return res.status(200).json(
-        new ApiResponce(200, updatedVideo, "Video updated successfully")
+        new ApiResponse(200, updatedVideo, "Video updated successfully")
     );
 });
 
@@ -391,7 +391,7 @@ export const togglePublishStatus = asyncHandler(async (req, res) => {
     return res
     .status(200)
     .json(
-        new ApiResponce(
+        new ApiResponse(
             200,
             updatedVideo,
             "Video publish status updated")

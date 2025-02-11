@@ -1,7 +1,7 @@
 import { Comment } from "../models/comment.model.js";
 import { Video } from "../models/video.model.js";
 import { ApiError } from "../utils/apiError.js";
-import { ApiResponce } from "../utils/ApiResponse.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 // Add a comment to a video
@@ -28,7 +28,7 @@ const addcomment = asyncHandler(async (req, res) => {
     await video.save();
     
     return res.status(201).json(
-        new ApiResponce(201, newComment, "Comment added successfully")
+        new ApiResponse(201, newComment, "Comment added successfully")
     );
 });
 
@@ -48,7 +48,7 @@ const getcommentonvideo = asyncHandler(async (req, res) => {
     console.log("comments:", comments);
     
     return res.status(200).json(
-        new ApiResponce(200, comments, "Comments retrieved successfully")
+        new ApiResponse (200, comments, "Comments retrieved successfully")
     );
 });
 
@@ -67,7 +67,7 @@ const deletecomment = asyncHandler(async (req, res) => {
     })
     await comment.deleteOne();
     return res.status(200).json(
-        new ApiResponce(200, {}, "Comment deleted successfully")
+        new ApiResponse(200, {}, "Comment deleted successfully")
     );
 });
 
@@ -85,7 +85,7 @@ const updatecomment = asyncHandler(async (req, res) => {
     await commentToUpdate.save();
     
     return res.status(200).json(
-        new ApiResponce(200, commentToUpdate, "Comment updated successfully")
+        new ApiResponse(200, commentToUpdate, "Comment updated successfully")
     );
 });
 

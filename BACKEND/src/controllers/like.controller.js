@@ -5,7 +5,7 @@ import { Comment } from "../models/comment.model.js";
 import { Post } from "../models/post.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/apiError.js";
-import { ApiResponce } from "../utils/apiResponse.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
 const toggleVideoLike = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
@@ -33,7 +33,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
         });
 
         return res.status(200).json(
-            new ApiResponce(200, null, "Like removed successfully")
+            new ApiResponse(200, null, "Like removed successfully")
         );
     } else {
         // ✅ Create a new like entry
@@ -55,7 +55,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
         });
 
         return res.status(201).json(
-            new ApiResponce(201, newLike, "Like added successfully")
+            new ApiResponse(201, newLike, "Like added successfully")
         );
     }
 });
@@ -77,7 +77,7 @@ const togglePostLike = asyncHandler(async (req, res) => {
             $pull: { likes: existingLike._id }
         });
         return res.status(200).json(
-            new ApiResponce(200, null, "Like removed successfully")
+            new ApiResponse (200, null, "Like removed successfully")
         );
     } else {
         const newLike = new Like({
@@ -89,7 +89,7 @@ const togglePostLike = asyncHandler(async (req, res) => {
             $push: { likes: newLike._id }
         });
         return res.status(201).json(
-            new ApiResponce(201, newLike, "Like added successfully")
+            new ApiResponse (201, newLike, "Like added successfully")
         );
     }
 });
@@ -108,7 +108,7 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
             $pull: { likes: existingLike._id }
         });
         return res.status(200).json(
-            new ApiResponce(200, null, "Like removed successfully")
+            new ApiResponse(200, null, "Like removed successfully")
         );
     } else {
         const newLike = new Like({
@@ -122,7 +122,7 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
         });
 
         return res.status(201).json(
-            new ApiResponce(201, newLike, "Like added successfully")
+            new ApiResponse(201, newLike, "Like added successfully")
         );
     }
 });
@@ -130,28 +130,21 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
 const getLikedVideos = asyncHandler(async (req, res) => {
     const userId = req.user._id;
 
-    // Get liked video IDs from the Like collection
-    const likedVideoIds = await Like.find(
-        {
-            likedBy: userId,
-            video: { $ne: null }
-        }).select("video");
+    // Get liked videos directly using populate
+    const likedVideos = await Like.find({ likedBy: userId, video: { $ne: null } })
+        .populate("video") 
+        .select("video");
 
-    // Extract only the video IDs
-    const videoIds = likedVideoIds.map(like => like.video);
+    // Extract videos from populated data
+    const videos = likedVideos.map(like => like.video);
 
-    // Fetch the actual video details
-    const likedVideos = await Video.find({ _id: { $in: videoIds } });
-
+    // Update user's liked videos (if not already there)
     await User.findByIdAndUpdate(userId, {
-        $addToSet: { likedvideos: { $each: videoIds } } 
+        $addToSet: { likedvideos: { $each: videos.map(video => video._id) } }
     });
 
     return res.status(200).json(
-        new ApiResponce(
-            200,
-            likedVideos,
-            "Liked videos fetched successfully")
+        new ApiResponse (200, videos, "Liked videos fetched successfully")
     );
 });
 

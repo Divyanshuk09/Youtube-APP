@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { User } from "../models/user.model.js";
 import { Subscription } from "../models/subcription.model.js";
 import { ApiError } from "../utils/ApiError.js";
-import { ApiResponce } from "../utils/ApiResponse.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 // ✅ Subscribe to a channel
@@ -23,7 +23,7 @@ const subscribe = asyncHandler(async (req, res) => {
     // ✅ Create new subscription
     await Subscription.create({ subscriber: userId, channel: channelId });
     
-    res.status(200).json(new ApiResponce(200, "Subscription created successfully"));
+    res.status(200).json(new ApiResponse(200, "Subscription created successfully"));
 });
 
 // ✅ Unsubscribe from a channel
@@ -41,7 +41,7 @@ const unsubscribe = asyncHandler(async (req, res) => {
         throw new ApiError(400, "You are not subscribed to this channel");
     }
 
-    res.status(200).json(new ApiResponce(200, "Subscription deleted successfully"));
+    res.status(200).json(new ApiResponse(200, "Subscription deleted successfully"));
 });
 
 // ✅ Get subscriber count for a channel
@@ -50,7 +50,7 @@ const getSubscribersCount = asyncHandler(async (req, res) => {
 
     const count = await Subscription.countDocuments({ channel: channelId });
 
-    res.status(200).json(new ApiResponce(200, { count }, "Subscriber count fetched successfully!"));
+    res.status(200).json(new ApiResponse(200, { count }, "Subscriber count fetched successfully!"));
 });
 
 // ✅ Get your own subscriptions (channels you follow)
@@ -65,7 +65,7 @@ const getSubscriptions = asyncHandler(async (req, res) => {
     // ✅ Extract only the channel details
     const channels = subscriptions.map(sub => sub.channel);
 
-    res.status(200).json(new ApiResponce(200, channels, "Subscriptions fetched successfully!"));
+    res.status(200).json(new ApiResponse(200, channels, "Subscriptions fetched successfully!"));
 });
 
 export {
