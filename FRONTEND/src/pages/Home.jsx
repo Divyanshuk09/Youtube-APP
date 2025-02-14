@@ -1,14 +1,15 @@
-import React from 'react'
-import Navbar from '../components/Navbar'
-import Sidebar from '../components/Sidebar'
+import React from "react";
+import MainLayout from "../components/Mainlayout";
 
-function Home() {
+const Home = () => {
   return (
-    <>
-    <Navbar/>
-    <div className='text-white'>Home</div>
-    </>
-  )
-}
+    <MainLayout>
+      <div className="p-4">
+        <h1 className="text-2xl font-bold">Welcome to YouTube Clone</h1>
+        <p className="text-gray-400">This is the home page.</p>
+      </div>
+    </MainLayout>
+  );
+};
 
-export default Home
+export default Home;

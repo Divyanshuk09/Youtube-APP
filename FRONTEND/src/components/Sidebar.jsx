@@ -1,42 +1,69 @@
-import React, { useState } from 'react';
-import { IoHome, IoMenu } from 'react-icons/io5';
-import { AiOutlineLike } from "react-icons/ai";
-import { GoHome } from "react-icons/go";
-import { PiGreaterThanBold } from "react-icons/pi";
-import { MdHistory, MdOutlineSubscriptions, MdPlaylistPlay, MdVideoLibrary } from "react-icons/md";
+import React from 'react';
+import { GoHome } from 'react-icons/go'; // Home icon
+import { PiGreaterThanBold } from 'react-icons/pi'; // Greater than icon
+import { MdHistory, MdOutlineSubscriptions, MdPlaylistPlay, MdVideoLibrary } from 'react-icons/md'; // Material Design icons
+import { AiOutlineLike } from 'react-icons/ai'; // Like icon
+import { IoMenu } from 'react-icons/io5';
 
-export default function Sidebar() {
+// Reusable MenuItem component
+const MenuItem = ({ icon: Icon, text }) => (
+  <li className="p-2 hover:bg-[#555] rounded-lg flex items-center gap-4 text-lg">
+    <Icon size={22} />
+    <span>{text}</span>
+  </li>
+);
 
-  const [openmenu, setOpenmenu] = useState(false);
-  const toggleMenu = () => setOpenmenu(prev => !prev);
+const Sidebar = ({ isOpen, toggleSidebar }) => {
   return (
-      <div className="sidebar className={`fixed top-0 left-0 h-full bg-[#1d1c1c] z-50 shadow-lg transition-transform duration-300 ${openmenu ? 'translate-x-0' : '-translate-x-full'}`}>
-        w-64 bg-[#1d1c1c] text-gray-100 h-screen overflow-y-auto">
+    <>
+      {/* Sidebar */}
+      <div
+        className={`fixed top-0 left-0 h-full bg-[#1d1c1c] z-40 shadow-lg transition-transform duration-300 ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        } w-64`}
+      >
         <div className="flex flex-col p-4 gap-2">
           {/* Header */}
           <div className="flex items-center gap-4 mb-4">
-            <IoMenu onClick={toggleMenu} size={25} />
-            <a href="/"className="text-2xl font-bold text-red-500">YouTube</a>
+            <button onClick={toggleSidebar} className="text-gray-100 hover:text-gray-300">
+              <IoMenu size={25}/>
+            </button>
+            <a href="/" className="text-2xl font-bold text-red-500">
+              YouTube
+            </a>
           </div>
 
           {/* Main Menu */}
           <ul className="space-y-1">
-            <li className="p-2 hover:bg-[#555] rounded-lg flex items-center gap-4 text-lg"><GoHome size={22}/> Home</li>
-            <li className="p-2 hover:bg-[#555] rounded-lg flex items-center gap-4 text-lg"> <MdOutlineSubscriptions size={22}/>Subscriptions</li>
+            <MenuItem icon={GoHome} text="Home" />
+            <MenuItem icon={MdOutlineSubscriptions} text="Subscriptions" />
             <hr className="border-gray-600 my-2" />
-            
+
             {/* User Section */}
-            <li className="p-2  hover:bg-[#555] rounded-lg flex items-center gap-4"> You <PiGreaterThanBold /></li>
-            <li className="p-2 hover:bg-[#555] rounded-lg flex items-center gap-4 text-lg"><MdHistory size={22}/> History</li>
-            <li className="p-2 hover:bg-[#555] rounded-lg flex items-center gap-4 text-lg"><MdPlaylistPlay size={22}/> Playlists</li>
-            <li className="p-2 hover:bg-[#555] rounded-lg flex items-center gap-4 text-lg"><MdVideoLibrary size={22}/> Your Videos</li>
-            <li className="p-2 hover:bg-[#555] rounded-lg flex items-center gap-4 text-lg"><AiOutlineLike size={22}/> Liked Videos</li>
+            <li className="p-2 hover:bg-[#555] rounded-lg flex items-center gap-4">
+              You <PiGreaterThanBold />
+            </li>
+            <MenuItem icon={MdHistory} text="History" />
+            <MenuItem icon={MdPlaylistPlay} text="Playlists" />
+            <MenuItem icon={MdVideoLibrary} text="Your Videos" />
+            <MenuItem icon={AiOutlineLike} text="Liked Videos" />
             <hr className="border-gray-600 my-2" />
-            
+
             {/* Subscriptions */}
             <li className="p-2 font-semibold">Subscriptions</li>
           </ul>
         </div>
       </div>
+
+      {/* Overlay to close sidebar when clicking outside (only on mobile) */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          onClick={toggleSidebar}
+        />
+      )}
+    </>
   );
-}
+};
+
+export default Sidebar;
