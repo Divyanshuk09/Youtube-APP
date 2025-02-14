@@ -524,7 +524,7 @@ Add Video to Playlist: Add video ID to playlist's videos array.
 
 
 
-#### TABLE FORM FOR FRONTEND:
+#### TABLE FORM OF API FOR FRONTEND:
 
 ## API Routes
 
