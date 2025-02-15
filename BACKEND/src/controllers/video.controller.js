@@ -158,6 +158,7 @@ export const getAllVideosForHome = asyncHandler(async (req, res, next) => {
                     createdAt: 1,
                     "owner._id": 1,
                     "owner.username": 1,
+                    "owner.channelName": 1,
                     "owner.avatar": 1, // Include user avatar for UI
                 },
             },
