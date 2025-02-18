@@ -1,72 +1,56 @@
 import React from "react";
-import {
-  Home as HomeIcon,
-  Whatshot as WhatshotIcon,
-  Subscriptions as SubscriptionsIcon,
-  VideoLibrary as VideoLibraryIcon,
-  History as HistoryIcon,
-  PlaylistPlay as PlaylistPlayIcon,
-  WatchLater as WatchLaterIcon,
-  ThumbUp as ThumbUpIcon,
-  NavigateNext as NavigateNextIcon,
-} from "@mui/icons-material";
+import HomeIcon from "@mui/icons-material/Home";
+import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
+import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
+import HistoryIcon from "@mui/icons-material/History";
+import PlaylistPlayIcon from "@mui/icons-material/PlaylistPlay";
+import OndemandVideoIcon from "@mui/icons-material/OndemandVideo";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import WatchLaterIcon from "@mui/icons-material/WatchLater";
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import DownloadIcon from "@mui/icons-material/Download";
+import { IoHandRightOutline } from "react-icons/io5";
 
-const Sidebar = ({ isSidebarOpen }) => {
+function Sidebar({ sidebar }) {
   return (
-    <div
-      className={`${isSidebarOpen ? "w-64" : "w-0"} transition-all duration-200`}
-    >
-      <div className="px-4 h-full bg-[#1e1e1e7e] text-white items-center justify-center">
-        {/* Top Section */}
-        <div className="top-of-sidebar">
-          <ul className="flex flex-col">
-            <li className="flex items-center gap-4 hover:bg-[#3d3d3d] p-3 rounded-md cursor-pointer">
-              <HomeIcon />
-              <p>Home</p>
-            </li>
-            <li className="flex items-center gap-4 hover:bg-[#3d3d3d] p-3 rounded-md cursor-pointer">
-              <SubscriptionsIcon />
-              <p>Subscriptions</p>
-            </li>
-          </ul>
+    <aside
+      className={`sidebar rounded-r-xl h-full bg-[#151515] text-white mt-2 px-2 py-2 fixed top-14 left-0 overflow-hidden transition-all duration-300 ${sidebar ? "w-64" : "w-16"}`}>
+      <div className="side-bar-items flex flex-col">
+        <div className="flex items-center space-x-4 p-3 rounded-md hover:bg-[#5555] cursor-pointer">
+          <HomeIcon fontSize="medium" />
+          <span className={`text-md ${sidebar ? "block" : "hidden"}`}>Home</span>
         </div>
-        <div className="h-[0.5px] my-2 w-full bg-[#555]"></div>
-        {/* Middle Section */}
-        <div className="middle-section">
-          <ul>
-            <li className="flex items-center gap-4 hover:bg-[#3d3d3d] p-3 rounded-md cursor-pointer">
-              <p>You</p>
-              <NavigateNextIcon />
-            </li>
-            <li className="flex items-center gap-4 hover:bg-[#3d3d3d] p-3 rounded-md cursor-pointer">
-              <HistoryIcon />
-              <p>History</p>
-            </li>
-            <li className="flex items-center gap-4 hover:bg-[#3d3d3d] p-3 rounded-md cursor-pointer">
-              <PlaylistPlayIcon />
-              <p>Playlist</p>
-            </li>
-            <li className="flex items-center gap-4 hover:bg-[#3d3d3d] p-3 rounded-md cursor-pointer">
-              <VideoLibraryIcon />
-              <p>Your Videos</p>
-            </li>
-            <li className="flex items-center gap-4 hover:bg-[#3d3d3d] p-3 rounded-md cursor-pointer">
-              <ThumbUpIcon />
-              <p>Liked Videos</p>
-            </li>
-          </ul>
+        <div className="flex items-center space-x-4 p-3 rounded-md hover:bg-[#5555] cursor-pointer">
+          <SubscriptionsIcon fontSize="medium" />
+          <span className={`text-md ${sidebar ? "block" : "hidden"}`}>Subscriptions</span>
         </div>
-
-        <div className="h-[0.5px] my-2 w-full bg-[#555]"></div>
-
-        {/* Bottom Section */}
-        <div className="flex text-gray-400 items-center gap-4 p-3 rounded-md cursor-pointer">
-            Subscriptions
+        <hr className="border-gray-700 my-4" />
+        <div className="flex items-center space-x-4 p-3 rounded-md hover:bg-[#5555] cursor-pointer">
+          <AccountCircleIcon fontSize="medium" />
+          <span className={`text-md ${sidebar ? "block" : "hidden"}`}>You </span>
         </div>
-        <li>hi</li>
+        <div className="flex items-center space-x-4 p-3 rounded-md hover:bg-[#5555] cursor-pointer">
+          <HistoryIcon fontSize="medium" />
+          <span className={`text-md ${sidebar ? "block" : "hidden"}`}>History</span>
+        </div>
+        <div className="flex items-center space-x-4 p-3 rounded-md hover:bg-[#5555] cursor-pointer">
+          <PlaylistPlayIcon fontSize="medium" />
+          <span className={`text-md ${sidebar ? "block" : "hidden"}`}>Playlists</span>
+        </div>
+        <div className="flex items-center space-x-4 p-3 rounded-md hover:bg-[#5555] cursor-pointer">
+          <OndemandVideoIcon fontSize="medium" />
+          <span className={`text-md ${sidebar ? "block" : "hidden"}`}>Your videos</span>
+        </div>
+        <div className="flex items-center space-x-4 p-3 rounded-md hover:bg-[#5555] cursor-pointer">
+          <ThumbUpIcon fontSize="medium" />
+          <span className={`text-md ${sidebar ? "block" : "hidden"}`}>Liked videos</span>
+        </div>
+        <hr className="border-gray-700 my-4" />
+        
       </div>
-    </div>
+    </aside>
   );
-};
+}
 
 export default Sidebar;

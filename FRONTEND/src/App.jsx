@@ -1,15 +1,20 @@
-import { useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
-import axios from "axios";
-import Home from "./pages/home";
+import React, { useState } from "react";
+import Navbar from "./components/Navbar";
+import { Route, Routes } from "react-router-dom";
+import Home from "./pages/Home";
+import Watch from "./pages/Watch";
 function App() {
 
+  const [sidebar, setSidebar] = useState(false);
+
   return (
-    <>
-    <Home/>
-    </>
+    <div>
+      <Navbar setSidebar={setSidebar}/>
+       <Routes>
+        <Route path="/" element={<Home sidebar={sidebar} />} />
+        <Route path="/watch" element={<Watch sidebar={sidebar} />} />
+      </Routes> 
+    </div>
   );
 }
 
