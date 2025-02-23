@@ -114,14 +114,40 @@ MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.xyz.mongodb.net
 ### Step 3: Connect Database to the Project
 
 * Write the database connection code in `src/db/index.js.`
+```
+import mongoose from "mongoose";
+
+const connectDB = async () => {
+    try {
+        const connectionInstance = await mongoose.connect(`${process.env.MONGODB_URI}`)
+        console.log(`\n MongoDB is connected !! DB Host : ${connectionInstance.connection.host}`)
+    } catch (error) {
+        console.log("MongoDB connection error:", error)
+        process.exit(1)
+    }
+}
+export default connectDB;
+```
 
 * Import the connectDB function in `index.js` and use .then for the port and .catch for error handling.
 
-* Add the following code to load environment variables:
+* Add the following code to load environment variables in  index.js main wala its imp;
 ```
 dotenv.config({
   path: "./.env",
 });
+
+//call the db from the mongodb
+connectDB()
+.then(()=>{
+    app.listen(port,()=>{
+        console.log(`Server is running at port : http://localhost:${port}`)
+    });
+})
+.catch((err)=>{
+    console.log("MONGODB connection error in db/index.js",err);
+})
+
 ```
 
 ### Step 4: Set Up Express in app.js
