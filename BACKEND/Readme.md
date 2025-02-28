@@ -1,4 +1,4 @@
-# YouTube Clone - Full Stack MERN
+# YouTube Clone - BACKEND SETUP
 
 ### Step 1: Data Modeling for the Project
 
