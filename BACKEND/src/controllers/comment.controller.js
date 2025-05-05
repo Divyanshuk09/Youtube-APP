@@ -34,7 +34,7 @@ const addcomment = asyncHandler(async (req, res) => {
 
 // Get all comments on a video
 const getcommentonvideo = asyncHandler(async (req, res) => {
-    const { id } = req.params;
+    const { id } = req.params; //videoid
     const video = await Video.findById(id);
     console.log("video:", video);
     
@@ -54,7 +54,7 @@ const getcommentonvideo = asyncHandler(async (req, res) => {
 
 // Delete a comment
 const deletecomment = asyncHandler(async (req, res) => {
-    const { id } = req.params;
+    const { id } = req.params; //comment id
     const comment = await Comment.findById(id);
     
     if (!comment) {
@@ -73,7 +73,7 @@ const deletecomment = asyncHandler(async (req, res) => {
 
 // Update a comment
 const updatecomment = asyncHandler(async (req, res) => {
-    const { id } = req.params;
+    const { id } = req.params; //comment id
     const { comment } = req.body;
     
     const commentToUpdate = await Comment.findById(id);

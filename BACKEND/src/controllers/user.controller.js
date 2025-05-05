@@ -1,6 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js"; // Utility to handle async functions and errors
 import { ApiError } from "../utils/apiError.js"; // Custom error class for API errors
-import { ApiResponse } from "../utils/ApiResponse.js"; // Custom response class for API responses
+import { ApiResponse } from "../utils/apiResponse.js" // Custom response class for API responses
 import { User } from "../models/user.model.js"; // Import User model to interact with the database
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js"; // Utility for uploading files to Cloudinary
 import jwt from "jsonwebtoken";
@@ -93,14 +93,13 @@ export const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Something went wrong while registering the user"); // Throw an error indicating the user registration failed
     }
 
-    return res
-        .status(201)
-        .json(
-            new ApiResponse(
-                200,
-                createduser,
-                "User registered successfully"
-            )); // Send a successful response with the created user data
+    res.status(201).json(
+        new ApiResponse(
+            201,
+            createduser,
+            "User registered successfully"
+        )
+    );
 });
 
 // Login user function

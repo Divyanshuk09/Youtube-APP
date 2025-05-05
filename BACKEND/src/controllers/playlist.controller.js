@@ -4,123 +4,122 @@ import { Video } from "../models/video.model.js";
 import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { nanoid } from 'nanoid'
+
+const generateShareLink = () => {
+    return {
+        token: nanoid(16),
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), //30days from now
+        maxUses: 100,
+        active: true
+    }
+}
 
 const createPlaylist = asyncHandler(async (req, res) => {
-
-    const { name, description } = req.body
+    const { name, description } = req.body;
     const userId = req.user._id;
 
     if (!name || !description) {
-        throw new ApiError(
-            400,
-            "Please provide name and description for the playlist",
-        )
+        throw new ApiError(400, "Name and description are required");
     }
 
-    const newPlaylist = await Playlist.create({
+    const existing = await Playlist.findOne({ name, owner: userId });
+    if (existing) {
+        throw new ApiError(409, "You already have a playlist with this name");
+    }
+
+    // First create the playlist
+    const playlist = await Playlist.create({
         name,
         description,
-        owner: userId
+        owner: userId,
+        shareLink: generateShareLink(),
     });
 
-    res
-        .status(201)
-        .json(new ApiResponse(
-            201,
-            newPlaylist,
-            "Playlist created successfully"
-        ));
+    // Then generate the share URL using the created playlist's token
+    const shareUrl = `${req.protocol}://${req.get('host')}/api/playlists/share/${playlist.shareLink.token}`;
 
+    // Include the shareUrl in the response if you want to return it
+    const responseData = {
+        ...playlist.toObject(),
+        shareUrl
+    };
 
-})
+    res.status(201).json(
+        new ApiResponse(201, responseData, "Playlist created successfully")
+    );
+});
 
-const getUserPlaylist = asyncHandler(async (req, res) => {
-    console.log("Received request to fetch user playlists");
+const getUserPlaylists = asyncHandler(async (req, res) => {
 
-    // Extract userId from request parameters
     const { userId } = req.params;
-    console.log(`User ID received: ${userId}`);
 
-    // Fetch playlists that match the owner ID
-    const userPlaylists = await Playlist.find({ owner: userId });
+    const playlists = await Playlist.find({
+        $or: [
+            { owner: userId },
+            { "collaborators.user": userId }
+        ]
+    }).sort({ createdAt: -1 })
 
-    // Log fetched playlists
-    console.log("User Playlists Found:", userPlaylists);
-
-    if (!userPlaylists || userPlaylists.length === 0) {
-        console.error("No playlists found for this user");
-        throw new ApiError(404, "No playlists found for this user");
+    if (!playlists.length) {
+        return res.status(200).json(
+            new ApiResponse(200, [], "No playlists found")
+        );
     }
 
-    // Return response with user's playlists
-    return res.status(200).json(
-        new ApiResponse(200, userPlaylists, "User playlists retrieved successfully")
+    res.status(200).json(
+        new ApiResponse(200, playlists, "Playlists retrieved successfully")
     );
 });
 
 const searchPlaylist = asyncHandler(async (req, res) => {
-
-    /*
-    Get the query parameter from the request body.
-    Validate the query.
-    Use the $regex operator to search for matching playlists based on the name or description.
-    Return the found playlists or a 404 error if none are found.
-    */
-
     const query = req.query.search_query;
 
-    console.log(query);
-
     if (!query) {
-        throw new ApiError(
-            400,
-            "Query is required",
-        )
+        throw new ApiError(400, "Query is required",)
     }
 
     const playlists = await Playlist.find({
         $or: [
             {
-                name: {
-                    $regex: query,
-                    $options: "i"
-                }
+                name: { $regex: query, $options: "i" }
             },
             {
-                description: {
-                    $regex: query,
-                    $options: "i"
-                }
+                description: { $regex: query, $options: "i" }
             }
         ]
     })
 
     if (!playlists) {
-        throw new ApiError(
-            404,
-            "Playlist not found",
-        )
+        throw new ApiError(404, "Playlist not found",)
     }
 
     return res.status(200).json(
-        new ApiResponse(
-            200,
-            playlists,
-            "playlist fetched successfully"
-        )
+        new ApiResponse(200, playlists, "playlist fetched successfully")
     )
 })
 
-const getPlaylistVideos = asyncHandler(async (req, res) => {
-    const { playlistId } = req.params;
-    
-    console.log(`Fetching videos for playlist: ${playlistId}`);
-
-    // Find the playlist and populate video details
-    const playlist = await Playlist.findById(playlistId).populate("videos");
+const getPlaylistById = asyncHandler(async (req, res) => {
+    const playlist = await Playlist.findById(req.params.playlistId)
+        .populate("owner", "username avatar")
+        .populate("collaborators.user", "username avatar")
+        .populate("videos.video", "title thumbnail  duration")
+        .populate("videos.addedBy", "username")
 
     if (!playlist) {
-        console.error("Playlist not found");
+        throw new ApiError(404, "Playlist not found");
+    }
+
+    res.status(200).json(
+        new ApiResponse(200, playlist, "Playlist retrieved successfully")
+    );
+})
+
+const getPlaylistVideos = asyncHandler(async (req, res) => {
+    const playlist = await Playlist.findById(req.params.playlistId)
+        .populate("videos.video", "title thumbnail  duration")
+
+    if (!playlist) {
         throw new ApiError(404, "Playlist not found");
     }
 
@@ -130,162 +129,173 @@ const getPlaylistVideos = asyncHandler(async (req, res) => {
     );
 });
 
-const addvideotoplaylist = asyncHandler(async (req, res) => {
+const updatePlaylist = asyncHandler(async (req, res) => {
+    const { name, description } = req.body;
+    const playlist = req.playlist;
 
-    /*
-    Extract the videoId and playlistId from the request parameters.
-Check if both the video and playlist exist in the database.
-Ensure the video is not already in the playlist to prevent duplicates.
-Add the video ID to the playlist's videos array.
-Save the updated playlist and return the result.
-    */
-
-    const { videoId, playlistId } = req.params;
-    const video = await Video.findById(videoId);
-    const playlist = await Playlist.findById(playlistId);
-
-    if (!video) {
-        throw new ApiError(
-            404,
-            "video not found",
-        )
-    }
     if (!playlist) {
-        throw new ApiError(
-            404,
-            "Playlist not found",
+        throw new ApiError(404, "Playlist not found");
+    }
+    // Update playlist details if provided
+    if (name) playlist.name = name;
+    if (description) playlist.description = description;
+
+    // Save the updated playlist
+    await playlist.save();
+
+    return res.status(200).json(new ApiResponse(200, playlist, "Playlist updated successfully"));
+});
+
+const deletePlaylist = asyncHandler(async (req, res) => {
+
+    await req.playlist.deleteOne();
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, null, "Playlist deleted successfully")
         )
+})
+
+const addVideoToPlaylist = asyncHandler(async (req, res) => {
+
+    const { videoId } = req.params;
+    const playlist = req.playlist
+    const userId = req.user._id;
+
+    const video = await Video.findById(videoId);
+    if (!video) {
+        throw new ApiError(404, "video not found")
     }
 
-    if (playlist.videos.includes(videoId)) {
-        throw new ApiError(
-            400,
-            "Video already exists in the playlist",
-        )
+    const videoExists = playlist.videos.some(
+        v => v.video.toString() === videoId
+    );
+
+    if (videoExists) {
+        throw new ApiError(400, "Video already in playlist");
     }
 
-    playlist.videos.push(videoId);
+    playlist.videos.push({
+        video: videoId,
+        addedBy: userId
+    });
     await playlist.save();
 
     return res.status(200).json(
-        new ApiResponse(
-            200,
-            playlist,
-            "Video added to playlist successfully"
-        )
+        new ApiResponse(200, playlist, "Video added to playlist successfully")
     )
 })
 
 const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
-    const { playlistId, videoId } = req.params;
-    const userId = req.user.id; // Assuming verifyJWT middleware adds `req.user`
-
-    console.log(`Received request to remove video:${videoId} from playlist:${playlistId}`);
-    console.log("Video ID:", videoId, "Playlist ID:", playlistId, "User ID:", userId);
+    const { videoId } = req.params;
+    const playlist = req.playlist;
 
     // Fetch playlist and check if it exists
-    const playlist = await Playlist.findById(playlistId);
     if (!playlist) {
-        console.error("Playlist not found");
         throw new ApiError(404, "Playlist not found");
     }
 
-    // Check if the user is the owner of the playlist
-    if (playlist.owner.toString() !== userId) {
-        console.error("Unauthorized: User is not the owner of the playlist");
-        throw new ApiError(403, "You are not authorized to remove videos from this playlist");
-    }
+    const initialLength = playlist.videos.length;
+    playlist.videos = playlist.videos.filter(
+        v => v.video.toString() !== videoId);
+
 
     // Check if the video exists in the playlist
-    if (!playlist.videos.includes(videoId)) {
-        console.error("Video does not exist in the playlist");
-        throw new ApiError(400, "Video does not exist in the playlist");
+    if (initialLength === playlist.videos.length) {
+        throw new ApiError(404, "Video does not exist in the playlist");
     }
-
-    // Remove the video from the playlist
-    playlist.videos = playlist.videos.filter((id) => id.toString() !== videoId);
     await playlist.save();
-    console.log("Video removed successfully from playlist");
 
     return res.status(200).json(
         new ApiResponse(200, playlist, "Video removed from playlist successfully")
     );
 });
 
-const deletePlaylist = asyncHandler(async (req, res) => {
-    /*
-    Get the playlistId from the request parameters.
-  Check if the playlist exists.
-  If found, delete the playlist from the database.
-  Return a success message indicating the deletion.
-    */
+const getPlaylistByShareLink = asyncHandler(async (req, res) => {
+    const { token } = req.params;
 
-    const { playlistId } = req.params;
-    const playlist = await Playlist.findById(playlistId);
+    const playlist = await Playlist.findOne({ "shareLink.token": token })
+        .populate("owner", 'username avatar')
+        .populate("videos.video", "title thumbnail duration")
+
     if (!playlist) {
-        throw new ApiError(
-            404,
-            "Playlist not found",
-        )
+        throw new ApiError(404, "Playlist not found!");
     }
 
-    await playlist.deleteOne();
+    if (
+        !playlist.shareLink.active ||
+        (playlist.shareLink.expiresAt && new Date() > playlist.shareLink.expiresAt) ||
+        (playlist.shareLink.maxUses && playlist.shareLink.uses >= playlist.shareLink.maxUses)
+    ) {
+        throw new ApiError(403, "This share link is no longer valid")
+    }
 
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(
-                200,
-                null,
-                "Playlist deleted successfully"
-            )
-        )
+    playlist.shareLink.uses += 1;
+    await playlist.save()
+
+    return res.status(200).json(new ApiResponse(200, playlist, "playlist retrieved successfully"))
 })
 
-const updatePlaylist = asyncHandler(async (req, res) => {
-    console.log("Received request to update playlist");
+const joinAsCollaborator = asyncHandler(async (req, res) => {
+    const { token } = req.body;
+    const userId = req.user._id;
 
-    // Extract playlistId from request parameters
-    const { playlistId } = req.params;
-    console.log(`Playlist ID received: ${playlistId}`);
-
-    // Extract name and description from request body
-    const { name, description } = req.body;
-    console.log(`Name: ${name}, Description: ${description}`);
-
-    // Check if the playlist exists in the database
-    const playlist = await Playlist.findById(playlistId);
+    const playlist = await Playlist.findOne({ "shareLink.token": token })
     if (!playlist) {
-        console.error("Playlist not found");
-        throw new ApiError(404, "Playlist not found");
-    }
-    console.log("Playlist found:", playlist);
-
-    // Update playlist details if provided
-    if (name) {
-        console.log(`Updating playlist name from "${playlist.name}" to "${name}"`);
-        playlist.name = name;
-    }
-    if (description) {
-        console.log(`Updating playlist description from "${playlist.description}" to "${description}"`);
-        playlist.description = description;
+        throw new ApiError(404, "Playlist not found")
     }
 
-    // Save the updated playlist
+    // Check share link validity
+    if (
+        !playlist.shareLink.active ||
+        (playlist.shareLink.expiresAt && new Date() > playlist.shareLink.expiresAt) ||
+        (playlist.shareLink.maxUses && playlist.shareLink.uses >= playlist.shareLink.maxUses)
+    ) {
+        throw new ApiError(403, "This share link is no longer valid");
+    }
+
+    //check if user is already a collaborator 
+
+    const isCollaborator = playlist.collaborators.some(
+        c => c.user.toString() === userId.toString()
+    );
+    if (isCollaborator) {
+        throw new ApiError(409, "You are already a collaborator");
+    }
+
+    playlist.collaborators.push(userId)
+
+    playlist.shareLink.uses += 1;
     await playlist.save();
-    console.log("Playlist updated successfully");
 
-    return res.status(200).json(new ApiResponse(200, null, "Playlist updated successfully"));
-});
+    res.status(200).json(
+        new ApiResponse(200, playlist, "Joined playlist as collaborator successfully")
+    );
+})
 
+const updateShareLink = asyncHandler(async (req, res) => {
+    const playlist = req.playlist;
+
+    playlist.shareLink = generateShareLink();
+    await playlist.save()
+    const shareUrl = `${req.protocol}://${req.get('host')}/api/playlists/share/${playlist.shareLink.token}`;
+    res.status(200).json(
+        new ApiResponse(200, { ...playlist.shareLink.toObject(), url: shareUrl }, "Share link updated successfully")
+    );
+})
 
 export {
     createPlaylist,
-    getUserPlaylist,
-    getPlaylistVideos,
+    getUserPlaylists,
     searchPlaylist,
-    addvideotoplaylist,
-    deletePlaylist,
+    getPlaylistById,
+    getPlaylistVideos,
     updatePlaylist,
-    removeVideoFromPlaylist
+    deletePlaylist,
+    addVideoToPlaylist,
+    removeVideoFromPlaylist,
+    getPlaylistByShareLink,
+    joinAsCollaborator,
+    updateShareLink
 };
